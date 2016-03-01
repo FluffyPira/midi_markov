@@ -1,0 +1,5 @@
+*.mid
+*.txt
+.DS_Store
+.AppleDouble
+.LSOverride
