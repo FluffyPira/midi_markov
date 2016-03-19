@@ -10,5 +10,5 @@ To store midi files in the corpus.
 
 To generate a midi file.
 ```
-./generator.rb build "<midi>.mid" <tempo> <# of tracks>
+./generator.rb build "<midi>.mid" <tempo> <# of tracks> <length (in notes)>
 ```
