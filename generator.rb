@@ -5,7 +5,7 @@ require 'midilib/io/seqreader'
 require 'midilib/io/seqwriter'
 require 'midilib/sequence'
 require 'midilib/consts'
-require 'marky_markov'
+require_relative 'midi_markov_chains.rb'
 include MIDI
 
 SEQUENCE = MIDI::Sequence.new()
@@ -13,6 +13,7 @@ SEQUENCE = MIDI::Sequence.new()
 @midi_file = ARGV[1]
 @tempo = ARGV[2].to_i
 @tracks = ARGV[3].to_i
+@length = ARGV[4].to_i
 
 # Here's where we make our corpus of songs. It stores the midi number of the note (+64 because that's how this library works?)
 if ARGV[0].include?('store')
@@ -94,12 +95,6 @@ elsif ARGV[0].include?('build')
     return value
   end
   
-  # Make our dictionaries, and parse our corpus.
-  note_markov = MarkyMarkov::Dictionary.new('note_corpus', 4)
-  note_markov.parse_file "note_corpus.txt"
-  length_markov = MarkyMarkov::Dictionary.new('length_corpus', 4)
-  length_markov.parse_file "length_corpus.txt"
-  
   # Initialize the midi file and name our song.
   track = Track.new(SEQUENCE)
   SEQUENCE.tracks << track
@@ -129,7 +124,8 @@ elsif ARGV[0].include?('build')
     track_number += 1
     
     # TO DO LATER: Better way of selecting how many notes there will be.
-    notes = note_markov.generate_n_words rand(50..70)
+    note_markov = MidiMarkovMaker.new('note_corpus.txt')
+    notes = note_markov.create(@length)
     
     track = Track.new(SEQUENCE)
     SEQUENCE.tracks << track
@@ -149,7 +145,8 @@ elsif ARGV[0].include?('build')
     
     notes2.each do |note|
       # Generate us some note lengths!
-      length = length_markov.generate_n_words 3
+      length_markov = MidiMarkovMaker.new('length_corpus.txt')
+      length = length_markov.create(5)
       # Eliminate garbage, although this is kinda redundant now.
       length2 = length.split(" ").map(&:to_i).delete_if { |a| a < delta("eighth") }.delete_if { |a| a > delta("whole") }
       

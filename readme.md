@@ -1,4 +1,4 @@
-#MIDI Markov v0.1
+#MIDI Markov v0.2
 Creates a corpus from midi files which is uses to create markov generated midi music!
 
 ##How to use
